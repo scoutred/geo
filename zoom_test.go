@@ -10,8 +10,10 @@ import (
 
 func TestCetnterBoundsZoom(t *testing.T) {
 	bounds := geo.NewLatLngBounds(
-		-117.166048186108, 32.7199686756585,
-		-117.16572277941, 32.7201589855535,
+		32.7204706651118, -117.16439634561537,
+		32.71965828903011, -117.1673735976219,
+		//		-117.166048186108, 32.7199686756585,
+		//		-117.16572277941, 32.7201589855535,
 	)
 
 	size := geometry.NewPoint(1107, 360)
@@ -20,11 +22,11 @@ func TestCetnterBoundsZoom(t *testing.T) {
 
 	//	first test should max out at 30
 	center, zoom := CenterBoundsZoom(proj, bounds, size, 30.0)
-	if zoom != 22.0 {
+	if zoom != 18.0 {
 		t.Errorf("boundZoom failed to zoom correctly: %v", zoom)
 	}
 
-	if center.Lat != -85.05112877979998 || center.Lng != 32.72006383060597 {
+	if center.Lat != 32.720064477996 || center.Lng != -117.16588497161865 {
 		t.Errorf("center calulated incorrectly: %+v", center)
 	}
 }
