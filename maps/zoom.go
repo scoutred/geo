@@ -1,4 +1,4 @@
-package geo
+package maps
 
 import (
 	"github.com/scoutred/geo-tools/geo"
@@ -51,5 +51,6 @@ func BoundsZoom(proj crs.ProjectTransformer, bounds geo.LatLngBounds, size geome
 	}
 
 	//	return the calculated zoom
+	return zoom
 	return zoom - 1.0
 }
