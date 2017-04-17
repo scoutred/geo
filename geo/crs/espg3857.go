@@ -22,17 +22,17 @@ type espg3857 struct {
 }
 
 //	fetch the value of R
-func (this espg3857) R() float64 {
-	return this.r
+func (e espg3857) R() float64 {
+	return e.r
 }
 
-func (this espg3857) MaxLatitude() float64 {
-	return this.maxLatitude
+func (e espg3857) MaxLatitude() float64 {
+	return e.maxLatitude
 }
 
-func (this espg3857) Transform(point geometry.Point, scale float64) geometry.Point {
+func (e espg3857) Transform(point geometry.Point, scale float64) geometry.Point {
 	//	transfomration scale
-	tScale := 0.5 / (math.Pi * this.r)
+	tScale := 0.5 / (math.Pi * e.r)
 
 	//	new transformation
 	t := geometry.NewTransformation(tScale, 0.5, -tScale, 0.5)
@@ -42,21 +42,21 @@ func (this espg3857) Transform(point geometry.Point, scale float64) geometry.Poi
 }
 
 //	Spherical Mercator
-func (this espg3857) Project(latLng geo.LatLng) geometry.Point {
+func (e espg3857) Project(latLng geo.LatLng) geometry.Point {
 	d := math.Pi / 180
-	max := this.maxLatitude
+	max := e.maxLatitude
 	lat := math.Max(math.Min(max, latLng.Lat), -max)
 	sin := math.Sin(lat * d)
 
 	return geometry.Point{
-		X: this.r * latLng.Lng * d,
-		Y: this.r * math.Log((1+sin)/(1-sin)) / 2,
+		X: e.r * latLng.Lng * d,
+		Y: e.r * math.Log((1+sin)/(1-sin)) / 2,
 	}
 }
 
-func (this espg3857) UnTransform(point geometry.Point, scale float64) geometry.Point {
+func (e espg3857) UnTransform(point geometry.Point, scale float64) geometry.Point {
 	//	transfomration scale
-	tScale := 0.5 / (math.Pi * this.r)
+	tScale := 0.5 / (math.Pi * e.r)
 
 	//	new transformation
 	t := geometry.NewTransformation(tScale, 0.5, -tScale, 0.5)
@@ -66,11 +66,11 @@ func (this espg3857) UnTransform(point geometry.Point, scale float64) geometry.P
 }
 
 //	Spherical Mercator
-func (this espg3857) UnProject(point geometry.Point) geo.LatLng {
+func (e espg3857) UnProject(point geometry.Point) geo.LatLng {
 	d := 180 / math.Pi
 
 	return geo.LatLng{
-		Lat: (2*math.Atan(math.Exp(point.Y/this.r)) - (math.Pi / 2)) * d,
-		Lng: point.X * d / this.r,
+		Lat: (2*math.Atan(math.Exp(point.Y/e.r)) - (math.Pi / 2)) * d,
+		Lng: point.X * d / e.r,
 	}
 }

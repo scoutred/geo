@@ -1,74 +1,84 @@
 package geo
 
-func NewLatLngBounds(minLat, minLng, maxLat, maxLng float64) LatLngBounds {
-	return LatLngBounds{
-		NE: LatLng{
-			Lat: minLat,
-			Lng: minLng,
-		},
-		SW: LatLng{
-			Lat: maxLat,
-			Lng: maxLng,
-		},
-	}
+import "math"
+
+func NewLatLngBounds(a, b LatLng) LatLngBounds {
+	var bounds LatLngBounds
+
+	bounds.extend(a)
+	bounds.extend(b)
+
+	return bounds
 }
 
 //	represents a rectangular area on the map in geographical coordinates.
 type LatLngBounds struct {
 	//	north east
-	NE LatLng
+	ne LatLng
 	//	south west
-	SW LatLng
+	sw LatLng
+}
+
+func (llb *LatLngBounds) extend(p LatLng) {
+	if llb.sw.IsZero() && llb.ne.IsZero() {
+		llb.sw = p
+		llb.ne = p
+	} else {
+		llb.sw.Lat = math.Min(p.Lat, llb.sw.Lat)
+		llb.sw.Lng = math.Min(p.Lng, llb.sw.Lng)
+		llb.ne.Lat = math.Max(p.Lat, llb.ne.Lat)
+		llb.ne.Lng = math.Max(p.Lng, llb.ne.Lng)
+	}
 }
 
 //	center of the bounds
-func (this *LatLngBounds) Center() LatLng {
+func (llb *LatLngBounds) Center() LatLng {
 	return LatLng{
-		Lat: (this.SW.Lat + this.NE.Lat) / 2,
-		Lng: (this.SW.Lng + this.NE.Lng) / 2,
+		Lat: (llb.sw.Lat + llb.ne.Lat) / 2,
+		Lng: (llb.sw.Lng + llb.ne.Lng) / 2,
 	}
 }
 
-func (this *LatLngBounds) West() float64 {
-	return this.SW.Lng
+func (llb *LatLngBounds) West() float64 {
+	return llb.sw.Lng
 }
 
-func (this *LatLngBounds) South() float64 {
-	return this.SW.Lat
+func (llb *LatLngBounds) South() float64 {
+	return llb.sw.Lat
 }
 
-func (this *LatLngBounds) East() float64 {
-	return this.NE.Lng
+func (llb *LatLngBounds) East() float64 {
+	return llb.ne.Lng
 }
 
-func (this *LatLngBounds) North() float64 {
-	return this.NE.Lat
+func (llb *LatLngBounds) North() float64 {
+	return llb.ne.Lat
 }
 
-func (this *LatLngBounds) SouthWest() LatLng {
+func (llb *LatLngBounds) SouthWest() LatLng {
 	return LatLng{
-		Lat: this.South(),
-		Lng: this.West(),
+		Lat: llb.South(),
+		Lng: llb.West(),
 	}
 }
 
-func (this *LatLngBounds) NorthEast() LatLng {
+func (llb *LatLngBounds) NorthEast() LatLng {
 	return LatLng{
-		Lat: this.North(),
-		Lng: this.East(),
+		Lat: llb.North(),
+		Lng: llb.East(),
 	}
 }
 
-func (this *LatLngBounds) NorthWest() LatLng {
+func (llb *LatLngBounds) NorthWest() LatLng {
 	return LatLng{
-		Lat: this.North(),
-		Lng: this.West(),
+		Lat: llb.North(),
+		Lng: llb.West(),
 	}
 }
 
-func (this *LatLngBounds) SouthEast() LatLng {
+func (llb *LatLngBounds) SouthEast() LatLng {
 	return LatLng{
-		Lat: this.South(),
-		Lng: this.East(),
+		Lat: llb.South(),
+		Lng: llb.East(),
 	}
 }

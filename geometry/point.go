@@ -52,6 +52,9 @@ func (this Point) MultiplyBy(num float64) Point {
 }
 
 func (this Point) Contains(p Point) bool {
-	return math.Abs(p.X) <= math.Abs(this.X) &&
-		math.Abs(p.Y) <= math.Abs(this.Y)
+	return math.Abs(p.X) <= math.Abs(this.X) && math.Abs(p.Y) <= math.Abs(this.Y)
+}
+
+func (p Point) IsZero() bool {
+	return p.X == 0.0 && p.Y == 0.0
 }

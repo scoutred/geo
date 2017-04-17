@@ -1,12 +1,14 @@
 package maps
 
 import (
+	"math"
+
 	"github.com/scoutred/geo-tools/geo"
 	"github.com/scoutred/geo-tools/geo/crs"
 	"github.com/scoutred/geo-tools/geometry"
 )
 
-func CenterBoundsZoom(proj crs.ProjectTransformer, bounds geo.LatLngBounds, size geometry.Point, maxZoom float64) (geo.LatLng, float64) {
+func BoundsCenterZoom(proj crs.ProjectTransformer, bounds geo.LatLngBounds, size geometry.Point, maxZoom float64) (geo.LatLng, float64) {
 
 	//	calculate our zoom
 	zoom := BoundsZoom(proj, bounds, size, maxZoom)
@@ -23,34 +25,25 @@ func CenterBoundsZoom(proj crs.ProjectTransformer, bounds geo.LatLngBounds, size
 
 //	returns the zoom level for supplied bounds
 //	useful when rendering static map images
-//	pass in 0.0 for maxzoom for no maxzoom
+//	pass in 0.0 for maxZoom for no max zoom
 //
 //	TODO: add padding support
 func BoundsZoom(proj crs.ProjectTransformer, bounds geo.LatLngBounds, size geometry.Point, maxZoom float64) float64 {
-	zoom := 0.0
+	var zoom float64
+
 	nw := bounds.NorthWest()
 	se := bounds.SouthEast()
 
-	zoomNotFound := true
+	b := geometry.NewBounds(crs.LatLngToPoint(proj, se, zoom), crs.LatLngToPoint(proj, nw, zoom))
+	boundsSize := b.Size()
 
-	for {
-		zoom++
-		boundsSize := crs.LatLngToPoint(proj, se, zoom).Subtract(crs.LatLngToPoint(proj, nw, zoom)).Floor()
-		zoomNotFound = size.Contains(boundsSize)
+	scale := math.Min(size.X/boundsSize.X, size.Y/boundsSize.Y)
 
-		if zoomNotFound && zoom <= maxZoom {
-			continue
-		} else {
-			break
-		}
-	}
+	zoom = ScaleZoom(proj, scale, zoom)
 
-	//	if a maxZoom was set and zoom is greater than maxZoom, return maxZoom
-	if maxZoom != 0.0 && zoom > maxZoom {
-		return maxZoom
-	}
+	return math.Floor(zoom)
+}
 
-	//	return the calculated zoom
-	return zoom
-	return zoom - 1.0
+func ScaleZoom(proj crs.ProjectTransformer, scale float64, fromZoom float64) float64 {
+	return crs.Zoom(scale * crs.Scale(fromZoom))
 }
