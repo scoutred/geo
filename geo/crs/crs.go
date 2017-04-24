@@ -46,3 +46,8 @@ func Scale(zoom float64) float64 {
 func Zoom(scale float64) float64 {
 	return math.Log(scale/256) / math.Ln2
 }
+
+//	https://gist.github.com/perrygeo/4478844
+func MetersPerPixel(zoom, lat float64) float64 {
+	return (math.Cos(lat*math.Pi/180.0) * 2 * math.Pi * 6378137) / (256 * math.Pow(2, zoom))
+}

@@ -62,7 +62,7 @@ func TestPointLatLng(t *testing.T) {
 			crs:      crs.NewEspg3857(),
 			point:    geometry.NewPoint(365951.95759351854, 846601.1035181411),
 			zoom:     13.0,
-			expected: geo.NewLatLng(32.7305263087481, -117.180183060805),
+			expected: geo.NewLatLng(32.73052630874809, -117.18018306080502),
 		},
 	}
 
@@ -70,12 +70,47 @@ func TestPointLatLng(t *testing.T) {
 		point := crs.PointToLatLng(tc.crs, tc.point, tc.zoom)
 		if point.Lat != tc.expected.Lat {
 			t.Errorf("test (%v) failed. expected Lat (%v) does not match output Lat (%v)", i, tc.expected.Lat, point.Lat)
-			return
 		}
 
 		if point.Lng != tc.expected.Lng {
 			t.Errorf("test (%v) failed. expected Lng (%v) does not match output Lng (%v)", i, tc.expected.Lng, point.Lng)
-			return
+		}
+	}
+}
+
+func TestMetersPerPixel(t *testing.T) {
+	testcases := []struct {
+		zoom     float64
+		lat      float64
+		expected float64
+	}{
+		{
+			zoom:     5.0,
+			lat:      45.0,
+			expected: 3459.1450261885484,
+		},
+		{
+			zoom:     12.0,
+			lat:      0.0,
+			expected: 38.21851414258813,
+		},
+		{
+			zoom:     12.0,
+			lat:      79.0,
+			expected: 7.292436288331513,
+		},
+		{
+			zoom:     13.0,
+			lat:      0.0,
+			expected: 19.109257071294063,
+		},
+	}
+
+	for i, tc := range testcases {
+		output := crs.MetersPerPixel(tc.zoom, tc.lat)
+
+		if output != tc.expected {
+			t.Errorf("testcase (%v) failed. output (%v) does not match expected (%v)", i, output, tc.expected)
 		}
 	}
 }
