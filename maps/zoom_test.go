@@ -25,7 +25,7 @@ func TestBoundsCenterZoom(t *testing.T) {
 			size:           geometry.NewPoint(1107, 360),
 			maxZoom:        30.0,
 			expectedZoom:   13.0,
-			expectedCenter: geo.NewlatLng(32.71342381720108, -117.163634850997),
+			expectedCenter: geo.NewLatLng(32.71342381720108, -117.163634850997),
 		},
 		{
 			bounds: geo.NewLatLngBounds(
